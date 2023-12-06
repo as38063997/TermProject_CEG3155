@@ -1,0 +1,76 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY counter_4bit IS
+    PORT(
+        clk : IN std_logic;
+        rst : IN std_logic;
+        count : OUT std_logic_vector(3 DOWNTO 0)
+    );
+END counter_4bit;
+
+ARCHITECTURE rtl OF counter_4bit IS
+    SIGNAL int_a, int_b, int_c, int_d : std_logic;
+    SIGNAL int_na, int_nb, int_nc, int_nd : std_logic;
+
+    COMPONENT enARdFF_2 IS
+    PORT(
+        i_clk : IN std_logic;
+        i_rst : IN std_logic;
+        i_en : IN std_logic;
+        i_d : IN std_logic;
+        o_q, o_qBar : OUT std_logic
+    );
+    END COMPONENT;
+
+BEGIN
+
+int_d <= int_a and int_b and int_c;
+int_c <= (int_a and int_b) xor int_c;
+int_b <= int_a xor int_b;
+int_a <= not int_a;
+
+
+reg_D : enARdFF_2
+    PORT MAP(
+        i_clk => clk,
+        i_rst => rst,
+        i_en => '1',
+        i_d => int_D,
+        o_q => int_c,
+        o_qBar => int_nc
+    );
+
+reg_C : enARdFF_2
+    PORT MAP(
+        i_clk => clk,
+        i_rst => rst,
+        i_en => '1',
+        i_d => int_c,
+        o_q => int_b,
+        o_qBar => int_nb
+    );
+
+reg_B : enARdFF_2
+    PORT MAP(
+        i_clk => clk,
+        i_rst => rst,
+        i_en => '1',
+        i_d => int_b,
+        o_q => int_a,
+        o_qBar => int_na
+    );
+
+reg_A : enARdFF_2
+    PORT MAP(
+        i_clk => clk,
+        i_rst => rst,
+        i_en => '1',
+        i_d => int_a,
+        o_q => int_d,
+        o_qBar => int_nd
+    );
+
+count <= int_d & int_c & int_b & int_a;
+
+END rtl;

@@ -1,0 +1,74 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY tsrControl IS
+    PORT(
+        clk : IN std_logic;
+        reset : IN std_logic;
+        TDRE : IN std_logic;
+        TDRE_set: OUT std_logic;
+        i_s0,i_s1: OUT std_logic
+    );
+END tsrControl;
+
+ARCHITECTURE rtl of tsrControl IS
+    SIGNAL cnt_reg : std_logic_vector(3 downto 0);
+    SIGNAL cnt: std_logic;
+    
+    COMPONENT enARdFF_2
+        PORT(
+            clk : IN std_logic;
+            reset : IN std_logic;
+            D : IN std_logic;
+            Q : OUT std_logic
+        );
+    END COMPONENT;
+
+    COMPONENT enARdFF_2_rr
+        PORT(
+            clk : IN std_logic;
+            reset : IN std_logic;
+            D : IN std_logic;
+            Q : OUT std_logic
+        );
+    END COMPONENT;
+
+    COMPONENT counter_4bit
+        PORT(
+            clk : IN std_logic;
+            reset : IN std_logic;
+            cnt : OUT std_logic_vector;
+        );
+    END COMPONENT;
+
+    BEGIN
+
+    cnt <= cnt_reg(3) and cnt_reg(1);
+
+    S2: enARdFF_2 PORT MAP(
+        clk => clk,
+        reset => reset,
+        D => S1 or (S2 and not cnt),
+        Q => i_s1
+    );
+
+    S1: enARdFF_2 PORT MAP(
+        clk => clk,
+        reset => reset,
+        D => (S0 and not TDRE) or (S2 and cnt and not TDRE),
+        Q => i_s0 & i_s1 & TDRE_set
+    );
+
+    S0: enARdFF_2_rr PORT MAP(
+        clk => clk,
+        reset => reset,
+        D => '0',
+        Q => i_s0 & i_s1
+    );
+    
+    CNT: counter_4bit PORT MAP(
+        clk => clk,
+        reset => reset and S1,
+        cnt => cnt_reg
+    );
+
