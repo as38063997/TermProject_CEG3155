@@ -1,5 +1,0 @@
-int_S(2) or int_S(4) or int_S(6) or int_S(8) or
-          int_S(10) or int_S(12) or int_S(14) or int_S(16) or int_S(18) or
-          int_S(20) or int_S(22) or int_S(24) or int_S(26) or int_S(28) or
-          int_S(30) or int_S(32) or int_S(34) or int_S(36) or int_S(38) or
-          int_S(40) or int_S(42) or int_S(44) or int_S(46) or int_S(48);
